@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" data-color-scheme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nabha Learn - Offline Learning Platform</title>
+    <meta name="description" content="Offline-first multilingual learning platform optimized for low-end devices">
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTmFiaGEgTGVhcm4iLCJzaG9ydF9uYW1lIjoiTmFiaGEiLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsInRoZW1lX2NvbG9yIjoiIzBmNzY2ZSIsImRlc2NyaXB0aW9uIjoiT2ZmbGluZS1maXJzdCBtdWx0aWxpbmd1YWwgbGVhcm5pbmcgcGxhdGZvcm0iLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCM2FXUjBhRDBpTWpRaUlHaGxhV2RvZEQwaU1qUWlJSFpwWlhkQ2IzZzlJakFnTUNBeU5DQXlOQ0lnWm1sc2JEMGlJekJtTnpZMlpTSStQR0ZqYVhKamJHVWdZM2c5SWpFeUlpQmplVDBpTVRJaUlISTlJalFpSUM4K1BHVnNiR2x3YzJVZ1kzZzlJakV5SWlCamVUMGlNVGdpSUhKNFBTSTRJaUJ5ZVQwaU5DSWdabWxzYkQwaWQyaHBkR1VpTHo0OEwyRjJaejQ9Iiwic2l6ZXMiOiI5Nng5NiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+    <meta name="theme-color" content="#0f766e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Nabha Learn">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: 'unsafe-inline' 'unsafe-eval' https:; img-src 'self' data: blob: https: via.placeholder.com;">
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://via.placeholder.com">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- App Shell -->
+    <div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- Header -->
+        <header class="card__header flex items-center justify-between bg-color-primary text-white px-16 py-12">
+            <div class="flex items-center gap-8">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                    <circle cx="12" cy="12" r="4"/>
+                    <ellipse cx="12" cy="18" rx="8" ry="4" fill="white"/>
+                </svg>
+                <h1 id="app-title" class="text-2xl font-bold">Nabha Learn</h1>
+            </div>
+            
+            <div class="flex items-center gap-8">
+                <!-- Online/Offline Status -->
+                <div id="connection-status" class="flex items-center gap-4">
+                    <div id="status-indicator" class="w-2 h-2 rounded-full bg-success"></div>
+                    <span id="status-text" class="text-sm">Online</span>
+                </div>
+                
+                <!-- Language Switcher -->
+                <select id="language-switcher" class="form-control bg-transparent border-white text-white" style="background-image: none;">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="pa">ਪੰਜਾਬੀ</option>
+                </select>
+                
+                <!-- Settings -->
+                <button id="settings-btn" class="btn btn--secondary btn--sm" aria-label="Settings">
+                    ⚙️
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Navigation -->
+        <nav id="main-nav" class="bg-color-surface border-b border-color-border">
+            <div class="container flex gap-4 py-8 overflow-x-auto">
+                <button class="nav-btn active" data-view="role-selector">🏠 Home</button>
+                <button class="nav-btn" data-view="student-dashboard" id="student-nav" style="display: none;">📚 Lessons</button>
+                <button class="nav-btn" data-view="teacher-dashboard" id="teacher-nav" style="display: none;">👩‍🏫 Dashboard</button>
+                <button class="nav-btn" data-view="author-dashboard" id="author-nav" style="display: none;">✏️ Author</button>
+                <button class="nav-btn" data-view="admin-dashboard" id="admin-nav" style="display: none;">⚙️ Admin</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 container py-16">
+            
+            <!-- Role Selector View -->
+            <div id="role-selector" class="view">
+                <div class="text-center mb-32">
+                    <h2 class="text-3xl font-bold mb-8">Welcome to Nabha Learn</h2>
+                    <p class="text-text-secondary mb-16">Select your role to get started</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+                    <div class="card role-card" data-role="student">
+                        <div class="card__body text-center">
+                            <div class="text-4xl mb-8">👩‍🎓</div>
+                            <h3 class="text-xl font-bold mb-4" data-translate="student">Student</h3>
+                            <p class="text-text-secondary">Access lessons, complete quizzes, and track your progress</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card role-card" data-role="teacher">
+                        <div class="card__body text-center">
+                            <div class="text-4xl mb-8">👩‍🏫</div>
+                            <h3 class="text-xl font-bold mb-4" data-translate="teacher">Teacher</h3>
+                            <p class="text-text-secondary">Manage students, create assignments, and monitor progress</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card role-card" data-role="author">
+                        <div class="card__body text-center">
+                            <div class="text-4xl mb-8">✏️</div>
+                            <h3 class="text-xl font-bold mb-4" data-translate="author">Author</h3>
+                            <p class="text-text-secondary">Create and manage lesson content</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card role-card" data-role="admin">
+                        <div class="card__body text-center">
+                            <div class="text-4xl mb-8">⚙️</div>
+                            <h3 class="text-xl font-bold mb-4" data-translate="admin">Admin</h3>
+                            <p class="text-text-secondary">System administration and analytics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Dashboard -->
+            <div id="student-dashboard" class="view" style="display: none;">
+                <div class="flex items-center justify-between mb-16">
+                    <h2 class="text-2xl font-bold" data-translate="lessons">Lessons</h2>
+                    <div class="flex gap-8">
+                        <button id="sync-btn" class="btn btn--secondary btn--sm">
+                            🔄 <span data-translate="sync">Sync</span>
+                        </button>
+                        <select id="category-filter" class="form-control">
+                            <option value="">All Categories</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Digital Literacy">Digital Literacy</option>
+                            <option value="Language">Language</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="lessons-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
+                    <!-- Lessons will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Teacher Dashboard -->
+            <div id="teacher-dashboard" class="view" style="display: none;">
+                <div class="flex items-center justify-between mb-16">
+                    <h2 class="text-2xl font-bold" data-translate="dashboard">Teacher Dashboard</h2>
+                    <button id="import-roster-btn" class="btn btn--primary">📋 Import Roster</button>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-16 mb-16">
+                    <div class="card">
+                        <div class="card__body text-center">
+                            <div class="text-2xl font-bold text-primary" id="total-students">0</div>
+                            <div class="text-sm text-text-secondary">Total Students</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body text-center">
+                            <div class="text-2xl font-bold text-success" id="active-lessons">0</div>
+                            <div class="text-sm text-text-secondary">Active Lessons</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body text-center">
+                            <div class="text-2xl font-bold text-warning" id="avg-progress">0%</div>
+                            <div class="text-sm text-text-secondary">Average Progress</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 class="font-bold">Student Progress</h3>
+                        </div>
+                        <div class="card__body">
+                            <div id="student-progress-list" class="space-y-8">
+                                <!-- Student progress will be populated -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 class="font-bold">Quick Actions</h3>
+                        </div>
+                        <div class="card__body space-y-8">
+                            <button class="btn btn--secondary btn--full-width" id="create-assignment-btn">
+                                ➕ Create Assignment
+                            </button>
+                            <button class="btn btn--secondary btn--full-width" id="view-reports-btn">
+                                📊 View Reports
+                            </button>
+                            <button class="btn btn--secondary btn--full-width" id="manage-students-btn">
+                                👥 Manage Students
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Author Dashboard -->
+            <div id="author-dashboard" class="view" style="display: none;">
+                <div class="flex items-center justify-between mb-16">
+                    <h2 class="text-2xl font-bold">Content Authoring</h2>
+                    <button id="new-lesson-btn" class="btn btn--primary">➕ New Lesson</button>
+                </div>
+                
+                <div id="lesson-form" class="card mb-16" style="display: none;">
+                    <div class="card__header">
+                        <h3 class="font-bold">Create New Lesson</h3>
+                    </div>
+                    <div class="card__body">
+                        <form id="lesson-creation-form" class="space-y-16">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+                                <div class="form-group">
+                                    <label class="form-label">Lesson Title</label>
+                                    <input type="text" class="form-control" id="lesson-title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Language</label>
+                                    <select class="form-control" id="lesson-language" required>
+                                        <option value="en">English</option>
+                                        <option value="hi">Hindi</option>
+                                        <option value="pa">Punjabi</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-control" id="lesson-category" required>
+                                        <option value="Mathematics">Mathematics</option>
+                                        <option value="Digital Literacy">Digital Literacy</option>
+                                        <option value="Language">Language</option>
+                                        <option value="Science">Science</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Duration (minutes)</label>
+                                    <input type="number" class="form-control" id="lesson-duration" min="1" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" id="lesson-description" rows="3" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Lesson Content (HTML)</label>
+                                <textarea class="form-control" id="lesson-content" rows="8" placeholder="Enter lesson HTML content here..." required></textarea>
+                            </div>
+                            
+                            <div class="flex gap-8">
+                                <button type="submit" class="btn btn--primary">Create Lesson</button>
+                                <button type="button" class="btn btn--secondary" id="cancel-lesson">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card__header">
+                        <h3 class="font-bold">My Lessons</h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="authored-lessons" class="space-y-8">
+                            <!-- Authored lessons will be populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="admin-dashboard" class="view" style="display: none;">
+                <div class="flex items-center justify-between mb-16">
+                    <h2 class="text-2xl font-bold">System Administration</h2>
+                    <button id="system-sync-btn" class="btn btn--primary">🔄 System Sync</button>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-16 mb-16">
+                    <div class="card">
+                        <div class="card__body text-center">
+                            <div class="text-2xl font-bold text-primary">3</div>
+                            <div class="text-sm text-text-secondary">Total Lessons</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body text-center">
+                            <div class="text-2xl font-bold text-success">3</div>
+                            <div class="text-sm text-text-secondary">Total Students</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body text-center">
+                            <div class="text-2xl font-bold text-warning">2</div>
+                            <div class="text-sm text-text-secondary">Active Teachers</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body text-center">
+                            <div class="text-2xl font-bold text-info">12MB</div>
+                            <div class="text-sm text-text-secondary">Storage Used</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 class="font-bold">System Status</h3>
+                        </div>
+                        <div class="card__body space-y-8">
+                            <div class="flex items-center justify-between">
+                                <span>Service Worker</span>
+                                <span class="status status--success">Active</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Cache Storage</span>
+                                <span class="status status--success">Healthy</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>IndexedDB</span>
+                                <span class="status status--success">Connected</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Background Sync</span>
+                                <span class="status status--warning" id="sync-status">Pending</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 class="font-bold">Quick Actions</h3>
+                        </div>
+                        <div class="card__body space-y-8">
+                            <button class="btn btn--secondary btn--full-width" id="clear-cache-btn">
+                                🗑️ Clear Cache
+                            </button>
+                            <button class="btn btn--secondary btn--full-width" id="export-data-btn">
+                                📦 Export Data
+                            </button>
+                            <button class="btn btn--secondary btn--full-width" id="view-logs-btn">
+                                📋 View Logs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Lesson Player Modal -->
+        <div id="lesson-modal" class="modal hidden">
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="lesson-modal-title" class="font-bold text-lg"></h3>
+                        <button id="close-lesson-modal" class="btn btn--secondary btn--sm">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="lesson-player">
+                            <div id="lesson-content-area" class="mb-16">
+                                <!-- Lesson content will be loaded here -->
+                            </div>
+                            <div id="quiz-area" style="display: none;">
+                                <h4 class="font-bold mb-8">Quiz</h4>
+                                <div id="quiz-questions" class="space-y-16">
+                                    <!-- Quiz questions will be loaded here -->
+                                </div>
+                                <button id="submit-quiz" class="btn btn--primary mt-16">Submit Quiz</button>
+                            </div>
+                            <div class="flex items-center justify-between mt-16">
+                                <button id="start-quiz" class="btn btn--primary">Take Quiz</button>
+                                <div class="flex gap-8">
+                                    <button id="prev-section" class="btn btn--secondary">← Previous</button>
+                                    <button id="next-section" class="btn btn--secondary">Next →</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="font-bold text-lg" data-translate="settings">Settings</h3>
+                        <button id="close-settings-modal" class="btn btn--secondary btn--sm">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="space-y-16">
+                            <div class="form-group">
+                                <label class="form-label">Theme</label>
+                                <select id="theme-selector" class="form-control">
+                                    <option value="auto">Auto</option>
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Text Size</label>
+                                <select id="text-size-selector" class="form-control">
+                                    <option value="small">Small</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="large">Large</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="flex items-center gap-8">
+                                    <input type="checkbox" id="high-contrast-mode">
+                                    <span>High Contrast Mode</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="flex items-center gap-8">
+                                    <input type="checkbox" id="auto-download" checked>
+                                    <span>Auto-download lessons</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="fixed top-16 right-16 z-50 space-y-8" style="z-index: 1000;"></div>
+
+    </div>
+
+    <!-- CSV Import Input (hidden) -->
+    <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+
+    <script src="app.js"></script>
+</body>
+</html>
